@@ -195,6 +195,10 @@ public class DataConnection implements AutoCloseable {
         return null;
     }
 
+    public Object scalar(String sql) throws SQLException {
+        return scalar(sql, new LinkedList<>());
+    }
+
     //---------------------------------------------------
 
     public void rollback() throws SQLException {
@@ -220,4 +224,5 @@ public class DataConnection implements AutoCloseable {
             }
         }
     }
+
 }

@@ -1,7 +1,9 @@
 package controllers;
 
-import domain.repository.ProductRepository;
 import domain.entity.Product;
+import domain.repository.ProductRepository;
+import domain.repository.paging.PageRequest;
+import domain.repository.result.Page;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -10,34 +12,29 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.util.List;
 
-@WebServlet(name = "Servlet", urlPatterns = {"/products"}, loadOnStartup = 1)
-public class ProductsController extends HttpServlet {
+import static core.Helpers.firstNotEmpty;
 
-    private final Logger logger = LogManager.getLogger(this.getClass().getName());
+@WebServlet(name = "Servlet", urlPatterns = {"/products/*"}, loadOnStartup = 1)
+public class ProductsController extends BaseController {
 
     private ProductRepository productRepository = new ProductRepository();
 
-
     @Override
-    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        PrintWriter out = resp.getWriter();
-
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         try {
-            List<Product> products = productRepository.findAll();
-
-            for (Product product : products) {
-                out.println(product);
-            }
-
+            long pageNo = Long.parseLong(firstNotEmpty(request.getParameter("page"), "1"));
+            long pageSize = Long.parseLong(firstNotEmpty(request.getParameter("size"), "5"));
+            Page<Product> result = productRepository.findAll(new PageRequest(pageNo, pageSize));
+            request.setAttribute("result", result);
         } catch (SQLException e) {
             e.printStackTrace();
-            out.write(e.getMessage());
         }
+        request.getRequestDispatcher(config.get("web.view.prefix") + "products.jsp").forward(request, response);
     }
 
     @Override
