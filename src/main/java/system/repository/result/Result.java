@@ -8,6 +8,17 @@ public class Result<T> {
     protected List<T> rows = new LinkedList<>();
     protected long totalRows = 0;
 
+    //--------------------------------
+
+    public Result() {}
+
+    public Result(List<T> rows, long totalRows) {
+        setRows(rows);
+        setTotalRows(totalRows);
+    }
+
+    //--------------------------------
+
     public void setRows(List<T> rows) {
         this.rows = rows;
     }

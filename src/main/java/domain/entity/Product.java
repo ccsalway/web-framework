@@ -1,6 +1,7 @@
 package domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import system.annotations.Column;
 import system.annotations.Entity;
 
@@ -42,6 +43,9 @@ public class Product {
 
     @Column(name = "someText")
     private String someText;
+
+    @JsonIgnore
+    private String nothing;
 
     //--------------------------------
 

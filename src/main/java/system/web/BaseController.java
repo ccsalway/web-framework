@@ -1,10 +1,11 @@
 package system.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import com.sun.xml.internal.ws.api.config.management.policy.ManagementAssertion;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import system.core.Loaders;
+import system.Settings;
+import system.common.Loaders;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -17,25 +18,12 @@ public abstract class BaseController extends HttpServlet {
 
     private final Logger logger = LogManager.getLogger(this.getClass().getName());
 
-    //------------------------------
-
-    protected Properties config;
-
-    //------------------------------
-
-    protected BaseController() {
-        try {
-            config = Loaders.properties("application.properties");
-        } catch (IOException e) {
-            e.printStackTrace();
-            logger.error(e);
-        }
-    }
+    protected Settings settings = Settings.getInstance();
 
     //------------------------------
 
     protected void dispatchView(HttpServletRequest request, HttpServletResponse response, String view) throws ServletException, IOException {
-        request.getRequestDispatcher(config.get("web.view.prefix") + view).forward(request, response);
+        request.getRequestDispatcher(settings.get("web.view.prefix") + view).forward(request, response);
     }
 
     protected void dispatchJson(HttpServletRequest request, HttpServletResponse response, Object forJson) throws IOException {
