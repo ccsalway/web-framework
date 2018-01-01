@@ -1,10 +1,10 @@
 package domain.repository;
 
 import domain.entity.Product;
-import domain.repository.core.PagingRepository;
-import domain.repository.paging.PageRequest;
-import domain.repository.result.Page;
-import domain.repository.result.Result;
+import system.repository.PagingRepository;
+import system.repository.paging.PageRequest;
+import system.repository.result.Page;
+import system.repository.result.Result;
 
 import java.sql.SQLException;
 

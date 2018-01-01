@@ -1,7 +1,7 @@
 import javafx.util.Pair;
-import library.database.ConnectionPool;
-import library.database.DataConnection;
-import library.database.DataSource;
+import system.database.ConnectionPool;
+import system.database.DataConnection;
+import system.database.DataSource;
 import org.junit.jupiter.api.*;
 
 import java.io.IOException;
@@ -24,7 +24,7 @@ class DataSourceTest {
     @BeforeAll
     void init() {
         properties = new Properties();
-        try (InputStream stream = this.getClass().getClassLoader().getResourceAsStream("application.properties")) {
+        try (InputStream stream = this.getClass().getClassLoader().getResourceAsStream("datasource1.properties")) {
             properties.load(stream);
         } catch (IOException e) {
             e.printStackTrace();
@@ -32,8 +32,9 @@ class DataSourceTest {
     }
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws SQLException {
         ds = new DataSource(properties);
+        assertEquals(Integer.parseInt(properties.getProperty("datasource.initPoolSize")), ds.getPool().poolSize());
     }
 
     @AfterEach
@@ -55,19 +56,21 @@ class DataSourceTest {
 
     @Test
     void testRequeue() throws SQLException {
+        int poolSize = ds.getPool().poolSize();
         DataConnection connection = ds.getConnection();
-        assertEquals(0, connection.getPoolSize());
+        assertEquals(poolSize - 1, connection.getPoolSize());
         connection.close();
-        assertEquals(1, connection.getPoolSize());
+        assertEquals(poolSize, connection.getPoolSize());
     }
 
     @Test
     void testClose() throws SQLException {
+        int poolSize = ds.getPool().poolSize();
         DataConnection connection = ds.getConnection();
-        assertEquals(0, connection.getPoolSize());
+        assertEquals(poolSize - 1, connection.getPoolSize());
         connection.setRequeue(false);
         connection.close();
-        assertEquals(0, connection.getPoolSize());
+        assertEquals(poolSize - 1, connection.getPoolSize());
     }
 
     @Test
